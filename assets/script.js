@@ -100,7 +100,7 @@ function loadCSVToTable(url, containerId) {
           "sProcessing":   "处理中...",
           "sLengthMenu":   "每页显示 _MENU_ 条",
           "sZeroRecords":  "没有找到匹配的内容",
-          "sInfo":         "显示第 _START_ - _END_ 条，共 _TOTAL_ 条记录",
+          "sInfo":         "显示第 _START_-_END_ 条，共 _TOTAL_ 条记录",
           "sInfoEmpty":    "暂无数据",
           "sInfoFiltered": "（已从 _MAX_ 条数据中过滤）",
           "sInfoPostFix":  "",
