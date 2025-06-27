@@ -2,7 +2,6 @@ function csvToArray(csv) {
   const rows = [];
   const lines = csv.trim().split('\n');
   for (const line of lines) {
-    // 兼容中文逗号
     let arr = [];
     let quote = false;
     let cur = '';
@@ -18,12 +17,19 @@ function csvToArray(csv) {
       }
     }
     arr.push(cur);
-    // 过滤全空行
     if (arr.some(cell => cell.trim() !== "")) {
       rows.push(arr);
     }
   }
   return rows;
+}
+
+// 千分位格式化函数
+function formatNumber(num) {
+  if (num === undefined || num === null || num === "") return '';
+  let n = Number(num);
+  if (isNaN(n)) return num;
+  return n.toLocaleString('zh-CN');
 }
 
 function createFilterRow(headers, data) {
@@ -55,6 +61,9 @@ function createFilterRow(headers, data) {
   return html;
 }
 
+let g_table_rows = [];
+let g_table_headers = [];
+
 function loadCSVToTable(url, containerId) {
   fetch(url)
     .then(resp => resp.text())
@@ -62,6 +71,12 @@ function loadCSVToTable(url, containerId) {
       const data = csvToArray(csv);
       const headers = data[0];
       const rows = data.slice(1);
+      g_table_headers = headers;
+      g_table_rows = rows;
+
+      // 找到金额列
+      const moneyIdx = headers.findIndex(h => h.includes('金额'));
+      // 生成表格
       let html = `<table id="invest-table" class="display" style="width:100%">
         <thead>
           <tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>
@@ -69,13 +84,15 @@ function loadCSVToTable(url, containerId) {
         </thead>
         <tbody>
           ${rows.map(row=>
-            `<tr>${row.map(cell=>`<td>${cell}</td>`).join('')}</tr>`
+            `<tr>${row.map((cell, idx)=>{
+              if(idx === moneyIdx && cell) return `<td style="text-align:right;font-weight:bold;color:#d81b60">${formatNumber(cell)}</td>`;
+              return `<td>${cell}</td>`;
+            }).join('')}</tr>`
           ).join('')}
         </tbody>
       </table>`;
       document.getElementById(containerId).innerHTML = html;
 
-      // 先初始化DataTable
       const table = $('#invest-table').DataTable({
         orderCellsTop: true,
         fixedHeader: true,
@@ -84,7 +101,7 @@ function loadCSVToTable(url, containerId) {
         }
       });
 
-      // DataTables初始化后再填充下拉选项
+      // 填充下拉选项
       $('#invest-table thead tr.filter-row th select').each(function(){
         let idx = $(this).data('idx');
         let unique = {};
@@ -96,14 +113,13 @@ function loadCSVToTable(url, containerId) {
         });
       });
 
-      // 字符串列筛选
+      // 筛选
       $('#invest-table thead').on('change', 'select.filter-select', function(){
         let idx = $(this).data('idx');
         let val = $(this).val();
         table.column(idx).search(val ? '^'+val+'$' : '', true, false).draw();
       });
 
-      // 数字列支持区间和精确
       $('#invest-table thead').on('input', 'input.filter-num', function(){
         let idx = $(this).data('idx');
         let val = $(this).val().trim();
@@ -112,7 +128,8 @@ function loadCSVToTable(url, containerId) {
           $.fn.dataTable.ext.search.push(
             function amountFilter(idx) {
               return function(settings, data, dataIndex) {
-                const cell = data[idx];
+                // 移除千分位再比较
+                const cell = data[idx].replace(/,/g, '');
                 const num = parseFloat(cell);
                 if(isNaN(num)) return false;
                 if(val.includes('-')) {
@@ -134,8 +151,14 @@ function loadCSVToTable(url, containerId) {
     });
 }
 
+// Excel导出
 document.getElementById('downloadBtn').onclick = function() {
-  window.location.href = 'data/my-investments.csv';
+  // 重新读原始数据，去除格式
+  const ws_data = [g_table_headers].concat(g_table_rows);
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "投资表");
+  XLSX.writeFile(wb, "投资记录.xlsx");
 };
 
 window.onload = function() {
