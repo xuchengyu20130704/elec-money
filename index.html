@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <title>妈妈投资我编程/电子元器件记录表</title>
   <link rel="stylesheet" href="assets/style.css">
-  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 </head>
 <body>
   <h1>妈妈投资我编程/电子元器件记录表</h1>
   <p>支持每列顶部筛选、排序和全局搜索。</p>
-  <button id="downloadBtn" style="margin-bottom: 1em;">下载投资表（CSV）</button>
+  <button id="downloadBtn">导出为 Excel（.xlsx）</button>
   <div id="table-container">加载中...</div>
-  <!-- jQuery 和 DataTables JS -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="assets/script.js"></script>
 </body>
 </html>
