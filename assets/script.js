@@ -85,7 +85,7 @@ function loadCSVToTable(url, containerId) {
         <tbody>
           ${rows.map(row=>
             `<tr>${row.map((cell, idx)=>{
-              if(idx === moneyIdx && cell) return `<td style="text-align:right;font-weight:bold;color:#d81b60">${formatNumber(cell)}</td>`;
+              if(idx === moneyIdx && cell) return `<td style="text-align:right;font-weight:bold;color:#d81b60">￥${formatNumber(cell)}</td>`;
               return `<td>${cell}</td>`;
             }).join('')}</tr>`
           ).join('')}
@@ -128,8 +128,8 @@ function loadCSVToTable(url, containerId) {
           $.fn.dataTable.ext.search.push(
             function amountFilter(idx) {
               return function(settings, data, dataIndex) {
-                // 移除千分位再比较
-                const cell = data[idx].replace(/,/g, '');
+                // 移除千分位和人民币符号再比较
+                const cell = data[idx].replace(/[￥,]/g, '');
                 const num = parseFloat(cell);
                 if(isNaN(num)) return false;
                 if(val.includes('-')) {
