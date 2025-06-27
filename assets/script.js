@@ -1,18 +1,28 @@
 function csvToArray(csv) {
-  const rows = csv.trim().split('\n').map(line => {
-    const regex = /("([^"]|"")*"|[^,]*)/g;
-    let match, arr = [], str = line;
-    while ((match = regex.exec(str)) !== null) {
-      let val = match[0];
-      if (val.startsWith('"') && val.endsWith('"')) {
-        val = val.slice(1, -1).replace(/""/g, '"');
+  const rows = [];
+  const lines = csv.trim().split('\n');
+  for (const line of lines) {
+    // 兼容中文逗号
+    let arr = [];
+    let quote = false;
+    let cur = '';
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        quote = !quote;
+      } else if ((c === ',' || c === '，') && !quote) {
+        arr.push(cur);
+        cur = '';
+      } else {
+        cur += c;
       }
-      arr.push(val);
-      if (str[match.index + val.length] === ',') regex.lastIndex++;
     }
-    if (arr.length && arr[arr.length-1] === "") arr.pop();
-    return arr;
-  });
+    arr.push(cur);
+    // 过滤全空行
+    if (arr.some(cell => cell.trim() !== "")) {
+      rows.push(arr);
+    }
+  }
   return rows;
 }
 
@@ -65,6 +75,7 @@ function loadCSVToTable(url, containerId) {
       </table>`;
       document.getElementById(containerId).innerHTML = html;
 
+      // 先初始化DataTable
       const table = $('#invest-table').DataTable({
         orderCellsTop: true,
         fixedHeader: true,
@@ -73,11 +84,11 @@ function loadCSVToTable(url, containerId) {
         }
       });
 
-      // 每列唯一选项填充下拉
+      // DataTables初始化后再填充下拉选项
       $('#invest-table thead tr.filter-row th select').each(function(){
         let idx = $(this).data('idx');
         let unique = {};
-        table.column(idx).data().each(function(d){
+        table.column(idx).data().toArray().forEach(function(d){
           unique[d] = true;
         });
         Object.keys(unique).sort().forEach(v=>{
