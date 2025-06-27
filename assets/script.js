@@ -97,27 +97,27 @@ function loadCSVToTable(url, containerId) {
         orderCellsTop: true,
         fixedHeader: true,
         language: {
-          "sProcessing": "处理中...",
-          "sLengthMenu": "每页显示 _MENU_ 条记录",
-          "sZeroRecords": "没有匹配结果",
-          "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-          "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
-          "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-          "sInfoPostFix": "",
-          "sSearch": "搜索:",
-          "sUrl": "",
-          "sEmptyTable": "表中数据为空",
-          "sLoadingRecords": "载入中...",
-          "sInfoThousands": ",",
+          "sProcessing":   "处理中...",
+          "sLengthMenu":   "每页显示 _MENU_ 条",
+          "sZeroRecords":  "没有找到匹配的内容",
+          "sInfo":         "显示第 _START_ 到 _END_ 条，共 _TOTAL_ 条记录",
+          "sInfoEmpty":    "暂无数据",
+          "sInfoFiltered": "（已从 _MAX_ 条数据中过滤）",
+          "sInfoPostFix":  "",
+          "sSearch":       "快速搜索：",
+          "sUrl":          "",
+          "sEmptyTable":     "表格中没有数据",
+          "sLoadingRecords": "数据加载中...",
+          "sInfoThousands":  ",",
           "oPaginate": {
-            "sFirst": "首页",
-            "sPrevious": "上一页",
-            "sNext": "下一页",
-            "sLast": "末页"
+              "sFirst":    "首页",
+              "sPrevious": "上一页",
+              "sNext":     "下一页",
+              "sLast":     "末页"
           },
           "oAria": {
-            "sSortAscending": ": 以升序排列此列",
-            "sSortDescending": ": 以降序排列此列"
+              "sSortAscending":  ": 点击按升序排列",
+              "sSortDescending": ": 点击按降序排列"
           }
         }
       });
